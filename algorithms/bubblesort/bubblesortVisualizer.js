@@ -9,9 +9,10 @@ var BAR_Y_AXIS = 200;
 var MAX_NUMBER = 100;
 var MIN_NUMBER = 10;
 var ANIMATION_DURATION = 500;
-var dataArray; // A global variable that holds the unsorted array.
+var dataArray1; // A global variable that holds the unsorted array.
                // Initialized as a random array. Manipulated by bubbleSort.
-var totalDelay = 0;
+var dataArray2; // A global variable that holds the unsorted array.
+               // Initialized as a random array. Manipulated by bubbleSortFaster.
 
 
 /**
@@ -19,8 +20,15 @@ var totalDelay = 0;
  */
 var init = function(){
   var array = createRandomArray(ARRAY_LENGTH, MIN_NUMBER, MAX_NUMBER);
-  var bars = d3.select('svg').selectAll('rect');
-  bars.data(array,function(d){return d.id;})
+  createDataBars(d3.select('#sort-regular'), array);
+  createDataBars(d3.select('#sort-faster'), array);
+  dataArray1 = array.slice();
+  dataArray2 = array.slice();
+};
+
+var createDataBars = function(svg, data) {
+  var bars = svg.selectAll('rect');
+  bars.data(data,function(d){return d.id;})
     .enter()
     .append('rect')
     .attr(
@@ -31,8 +39,8 @@ var init = function(){
         'y': function(d){ return BAR_Y_AXIS - d.num;},
         'fill': 'green'
       });
-  var text = d3.select('svg').selectAll('text');
-  text.data(array, function(d){return d.id;})
+  var text = svg.selectAll('text');
+  text.data(data, function(d){return d.id;})
     .enter()
     .append('text')
     .text(function(d){return d.num;})
@@ -44,7 +52,6 @@ var init = function(){
         'y': BAR_Y_AXIS,
         'text-anchor': 'middle'
       });
-  dataArray = array.slice();
 };
 
 
@@ -55,14 +62,13 @@ var init = function(){
  */
 
 var update = function() {
-  console.dir(dataArray);
   d3.selectAll('rect')
-    .data(dataArray, function(d){return d.id;})
+    .data(dataArray1, function(d){return d.id;})
     .transition().duration(ANIMATION_DURATION)
     .attr('x', function(d, i) {return i * BAR_WIDTH;});
 
   d3.selectAll('text')
-    .data(dataArray, function(d){return d.id;})
+    .data(dataArray1, function(d){return d.id;})
     .transition().duration(ANIMATION_DURATION)
     .attr('x', function(d, i) {return i * BAR_WIDTH + (BAR_WIDTH / 2);});
 }
@@ -73,8 +79,8 @@ var update = function() {
  * Animates highlighting of bars being compared.
  */
 
-var highlightBars = function(data) {
-  d3.selectAll('rect')
+var highlightBars = function(svg, data) {
+  svg.selectAll('rect')
     .data(data, function(d) {return d.id;})
     .transition()
     .attr('fill', 'yellow')
@@ -86,8 +92,8 @@ var highlightBars = function(data) {
  * Removes highlighting from all bars.
  */
 
-var clearHighlight = function() {
-  d3.selectAll('rect')
+var clearHighlight = function(svg) {
+  svg.selectAll('rect')
     .transition()
     .attr('fill', 'green');
 }
@@ -168,7 +174,7 @@ var bubbleSort = function(data) {
     }
 
     // Show bars being compared
-    highlightBars([data[i - 1], data[i]]);
+    highlightBars(d3.select('#sort-regular'), [data[i - 1], data[i]]);
 
     // Call remainder after animation for highlightBars
     setTimeout(function() {
@@ -187,7 +193,7 @@ var bubbleSort = function(data) {
 
       // Call remainder after animation for swap
       setTimeout(function() {
-        clearHighlight();
+        clearHighlight(d3.select('#sort-regular'));
 
         // Call remainder after animation for removing highlights
         setTimeout(function() {
@@ -202,39 +208,36 @@ var bubbleSort = function(data) {
 };
 
 
-
-
-
-
-
-
-var andThen = {
-  delay: 0,
-  doThis: function(cb, delay){
-    andThen.delay += delay;
-    setTimeout(function() {
-      cb();
-    }, andThen.delay);
-  },
-  reset: function() {
-    andThen.delay = 0;
+var bubbleSortFaster = function(array) {
+  if (array.length < 2) return array;
+  // Begin on second element in array, and compare with previous values.
+  // Swap if necessary.
+  var sorted = true;
+  var swapPoint = 0;
+  for(var i = 1; i < array.length; i++) {
+    if (array[i - 1] > array[i]) {
+      var temp = array[i];
+      array[i] = array[i - 1];
+      array[i - 1] = temp;
+      // If array was sorted up to this point, toggle that it is not sorted,
+      // and mark the point at which the swap occurred.
+      if (sorted) {
+        sorted = false;
+        swapPoint = i-1;
+      }
+    }
   }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  if (sorted) {
+    return array;
+  } else {
+    // Look one index before swapPoint. We'll keep the sorted
+    // array up to that point, then concat the rest of the array which will be
+    // sorted. If swapPoint is already 0, keep it at the beginning of the
+    // array.
+    swapPoint = Math.max(0, swapPoint-1)
+    return array.slice(0, swapPoint)
+                .concat(bubbleSortFaster(array.slice(swapPoint)));
+  }
+};
 
 

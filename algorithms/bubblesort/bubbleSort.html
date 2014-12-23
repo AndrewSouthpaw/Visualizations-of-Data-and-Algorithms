@@ -4,14 +4,27 @@
   </head>
   <body>
     <div>
-      <button onclick = "bubbleSort(dataArray);">Bubble Sort</button>
+      <h1>Bubble sort - standard</h1>
+      <div>
+        <button onclick = "bubbleSort(dataArray);">Bubble Sort</button>
+      </div>
+      <svg id="sort-regular" version="1.1" baseProfile="full" width="1000" height="200" xmlns="https://www.w3.org/2000/svg">
+      </svg>
+
     </div>
-    <svg id="gameboard" version="1.1" baseProfile="full" width="1000" height="1000" xmlns="https://www.w3.org/2000/svg">
 
-    </svg>
-
-    <script src="bubbleSortVisualizer.js" charset="utf-8"></script>
-    <script src="../../lib/d3.js" charset="utf-8"></script>
+    <div>
+      <h1>Bubble sort - optimized</h1>
+      <p>Keeps track of sorting progress, to avoid comparisons over the section of the array already sorted.</p>
+      <div>
+        <button onclick = "bubbleSortFaster(dataArray2);">Bubble Sort Faster</button>
+      </div>
+      <svg id="sort-faster" version="1.1" baseProfile="full" width="1000" height="200" xmlns="https://www.w3.org/2000/svg">
+      </svg>
+    </div>
+    <script src="bubbleSortVisualizer.js"></script>
+    <script src="../../lib/d3.js"></script>
+    <script src="../../lib/andThen.js"></script>
     <script>init()</script>
   </body>
 </html>
