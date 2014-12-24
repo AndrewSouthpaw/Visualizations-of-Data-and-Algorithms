@@ -8,7 +8,7 @@ var BAR_WIDTH = 50;
 var BAR_Y_AXIS = 200;
 var MAX_NUMBER = 100;
 var MIN_NUMBER = 10;
-var ANIMATION_DURATION = 100;
+var ANIMATION_DURATION = 200;
 var dataArray1; // A global variable that holds the unsorted array.
                // Initialized as a random array. Manipulated by bubbleSort.
 var dataArray2; // A global variable that holds the unsorted array.
