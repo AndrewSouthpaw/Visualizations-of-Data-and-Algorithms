@@ -107,8 +107,28 @@ var createRandomArray = function(length, min, max){
   return result;
 }
 
+/**
+ * animateSteps
+ * ============
+ * Explores the steps history recursively to allow for speeding up and
+ * slowing down of animation.
+ */
 
-function parseSteps (svg, step) {
+function animateSteps (svg, steps) {
+  if (steps.length === 0) return;
+  parseStep(svg, steps[0]);
+  setTimeout(function() {
+    animateSteps(svg, steps.slice(1));
+  }, ANIMATION_DURATION);
+}
+
+/**
+ * parseStep
+ * ==========
+ * Performs a particular action depending on the command object sent in.
+ */
+
+function parseStep (svg, step) {
   if (Array.isArray(step)) {
     update(svg, step);
   } else if (typeof step === 'object') {
@@ -119,6 +139,7 @@ function parseSteps (svg, step) {
     }
   }
 }
+
 
 
 
@@ -185,11 +206,7 @@ function quicksort (data, choosePivot) {
 
   qsort(0, data.length);
   steps.push({cmd:'clear'});
-  steps.forEach(function(i) {
-    andThen.doThis(function() {
-      parseSteps(svg, i);
-    }, ANIMATION_DURATION);
-  });
+  animateSteps(svg, steps);
   return data;
 }
 
