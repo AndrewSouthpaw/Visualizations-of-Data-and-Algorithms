@@ -8,7 +8,7 @@ var BAR_WIDTH = 50;
 var BAR_Y_AXIS = 200;
 var MAX_NUMBER = 100;
 var MIN_NUMBER = 10;
-var ANIMATION_DURATION = 500;
+var ANIMATION_DURATION = 250;
 var dataArray1; // A global variable that holds the unsorted array.
                // Initialized as a random array. Manipulated by bubbleSort.
 var dataArray2; // A global variable that holds the unsorted array.
@@ -61,14 +61,14 @@ var createDataBars = function(svg, data) {
  * Updates placement of the bars.
  */
 
-var update = function() {
-  d3.selectAll('rect')
-    .data(dataArray1, function(d){return d.id;})
+var update = function(svg, data) {
+  svg.selectAll('rect')
+    .data(data, function(d){return d.id;})
     .transition().duration(ANIMATION_DURATION)
     .attr('x', function(d, i) {return i * BAR_WIDTH;});
 
-  d3.selectAll('text')
-    .data(dataArray1, function(d){return d.id;})
+  svg.selectAll('text')
+    .data(data, function(d){return d.id;})
     .transition().duration(ANIMATION_DURATION)
     .attr('x', function(d, i) {return i * BAR_WIDTH + (BAR_WIDTH / 2);});
 }
@@ -82,7 +82,7 @@ var update = function() {
 var highlightBars = function(svg, data) {
   svg.selectAll('rect')
     .data(data, function(d) {return d.id;})
-    .transition()
+    .transition().duration(ANIMATION_DURATION)
     .attr('fill', 'yellow')
 }
 
@@ -94,7 +94,7 @@ var highlightBars = function(svg, data) {
 
 var clearHighlight = function(svg) {
   svg.selectAll('rect')
-    .transition()
+    .transition().duration(ANIMATION_DURATION)
     .attr('fill', 'green');
 }
 
@@ -164,6 +164,8 @@ var createRandomArray = function(length, min, max){
 
 
 var bubbleSort = function(data) {
+  var svg = d3.select('#sort-regular');
+
   if (data.length < 2) return data;
   var sorted = true;
 
@@ -174,7 +176,7 @@ var bubbleSort = function(data) {
     }
 
     // Show bars being compared
-    highlightBars(d3.select('#sort-regular'), [data[i - 1], data[i]]);
+    highlightBars(svg, [data[i - 1], data[i]]);
 
     // Call remainder after animation for highlightBars
     setTimeout(function() {
@@ -188,12 +190,12 @@ var bubbleSort = function(data) {
         data[i - 1] = temp;
         sorted = false;
         delay = ANIMATION_DURATION; // set delay to wait for swap animation
-        update();
+        update(svg, dataArray1);
       }
 
       // Call remainder after animation for swap
       setTimeout(function() {
-        clearHighlight(d3.select('#sort-regular'));
+        clearHighlight(svg);
 
         // Call remainder after animation for removing highlights
         setTimeout(function() {
@@ -208,36 +210,66 @@ var bubbleSort = function(data) {
 };
 
 
-var bubbleSortFaster = function(array) {
-  if (array.length < 2) return array;
+var bubbleSortFaster = function(data, start) {
+  // Store svg for later reference
+  var svg = d3.select('#sort-faster');
+  
+  var start = start || 1;
+
+  // Reset andThen timer for each recursive round
+  andThen.reset();
+
+  if (data.length < 2) return data;
+  
   // Begin on second element in array, and compare with previous values.
   // Swap if necessary.
   var sorted = true;
   var swapPoint = 0;
-  for(var i = 1; i < array.length; i++) {
-    if (array[i - 1] > array[i]) {
-      var temp = array[i];
-      array[i] = array[i - 1];
-      array[i - 1] = temp;
-      // If array was sorted up to this point, toggle that it is not sorted,
-      // and mark the point at which the swap occurred.
-      if (sorted) {
-        sorted = false;
-        swapPoint = i-1;
-      }
+  for(var i = start; i < data.length; i++) {
+    andThen.doThis((function() {
+      var j = i;
+      return function() {
+        highlightBars(svg, [data[j - 1], data[j]])
+      };
+    })(),ANIMATION_DURATION)
+
+    andThen.doThis((function() {
+      var j = i;
+      return function() {
+        var delay = 10;
+        if (data[j - 1].num > data[j].num) {
+          var temp = data[j];
+          data[j] = data[j - 1];
+          data[j - 1] = temp;
+          // If array was sorted up to this point, toggle that it is not sorted,
+          // and mark the point at which the swap occurred.
+          if (sorted) {
+            sorted = false;
+            swapPoint = j-1;
+          } 
+          update(svg, dataArray2);
+        }
+      };
+    })(), ANIMATION_DURATION);
+
+    
+    andThen.doThis(function() {
+      clearHighlight(svg);
+    }, ANIMATION_DURATION)
+    
+  }
+  andThen.doThis(function() {
+    if (sorted) {
+      return data;
+    } else {
+      // Look one index before swapPoint. We'll keep the sorted
+      // data up to that point, then concat the rest of the array which will be
+      // sorted. If swapPoint is already 0, keep it at the beginning of the
+      // array.
+      return bubbleSortFaster(data, swapPoint);
     }
-  }
-  if (sorted) {
-    return array;
-  } else {
-    // Look one index before swapPoint. We'll keep the sorted
-    // array up to that point, then concat the rest of the array which will be
-    // sorted. If swapPoint is already 0, keep it at the beginning of the
-    // array.
-    swapPoint = Math.max(0, swapPoint-1)
-    return array.slice(0, swapPoint)
-                .concat(bubbleSortFaster(array.slice(swapPoint)));
-  }
+    
+  },ANIMATION_DURATION);
 };
 
 

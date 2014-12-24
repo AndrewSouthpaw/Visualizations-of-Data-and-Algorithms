@@ -5,13 +5,14 @@
  * @param  { Array.}
  * @return { Sorted array.}
  */
-var bubbleSortFaster = function(array) {
+var bubbleSortFaster = function(array, start) {
   if (array.length < 2) return array;
   // Begin on second element in array, and compare with previous values.
   // Swap if necessary.
   var sorted = true;
+  var start = start || 1;
   var swapPoint = 0;
-  for(var i = 1; i < array.length; i++) {
+  for(var i = start; i < array.length; i++) {
     if (array[i - 1] > array[i]) {
       var temp = array[i];
       array[i] = array[i - 1];
@@ -31,8 +32,6 @@ var bubbleSortFaster = function(array) {
     // array up to that point, then concat the rest of the array which will be
     // sorted. If swapPoint is already 0, keep it at the beginning of the
     // array.
-    swapPoint = Math.max(0, swapPoint-1)
-    return array.slice(0, swapPoint)
-                .concat(bubbleSortFaster(array.slice(swapPoint)));
+    return bubbleSortFaster(array, swapPoint);
   }
 };
