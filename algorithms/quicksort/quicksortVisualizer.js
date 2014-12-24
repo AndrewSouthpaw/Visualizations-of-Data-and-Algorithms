@@ -3,7 +3,7 @@ var ARRAY_LENGTH = 50;
 var BAR_WIDTH = (1000 / ARRAY_LENGTH);
 var BAR_Y_AXIS = 120;
 var MAX_NUMBER = 100;
-var MIN_NUMBER = 10;
+var MIN_NUMBER = 1;
 var ANIMATION_DURATION = 200;
 var dataArray1; // A global variable that holds the unsorted array.
                // Initialized as a random array. Manipulated by quicksort.
@@ -34,6 +34,7 @@ var createDataBars = function(svg, data) {
         'fill': 'lightgray'
       });
 
+
   // Add text only if the bars have enough space for text
   if (BAR_WIDTH > 15) {
     var text = svg.selectAll('text');
@@ -51,6 +52,7 @@ var createDataBars = function(svg, data) {
         });
     
   }
+
 };
 
 
@@ -163,7 +165,6 @@ function quicksort (data, choosePivot) {
    */
   function qsort (l, r) {
     if (l < r) {
-      console.log(choosePivot)
       steps.push({cmd:'clear'});
       steps.push({cmd:'highlight', color:'green', data:data.slice(l, r)})
       var pivotIndex = choosePivot(l, r);
@@ -218,7 +219,6 @@ function quicksort (data, choosePivot) {
     svg = d3.select('#sort-regular');
   } 
 
-  console.log(choosePivot);
 
   qsort(0, data.length);
   steps.push({cmd:'clear'});

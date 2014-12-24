@@ -5,7 +5,7 @@
   </head>
   <body>
     <div>
-      <button onclick="quicksort(dataArray2, 'randomized'); quicksort(dataArray1); ">
+      <button onclick="quicksort(dataArray1); quicksort(dataArray2, 'randomized');">
         Compare
       </button>
     </div>
@@ -31,10 +31,11 @@
     <div>
       <h3>Animation speed</h3>
       <input type="range" name="animation-speed" value="250" placeholder="250"
-        min="50" max="450" onchange="ANIMATION_DURATION = +this.value">
+        min="25" max="450" onchange="ANIMATION_DURATION = +this.value">
     </div>
     <script src="quicksortVisualizer.js"></script>
     <script src="../../lib/d3.js"></script>
+    <script src="../../lib/jquery-1.8.3.js"></script>
     <script src="../../lib/andThen.js"></script>
     <script>init()</script>
   </body>
