@@ -1,6 +1,6 @@
 // Globals.
-var ARRAY_LENGTH = 10;
-var BAR_WIDTH = 50;
+var ARRAY_LENGTH = 50;
+var BAR_WIDTH = 10;
 var BAR_Y_AXIS = 200;
 var MAX_NUMBER = 100;
 var MIN_NUMBER = 10;
@@ -157,19 +157,17 @@ function quicksort (data, choosePivot) {
   function partition (l, r) {
     var p = data[l];
     var i = l + 1;
-    steps.push({cmd:'highlight', color:'deepskyblue', data:[data[i]]});
-    var e;
-    for (var j = l + 2; j < r; j++) {
-      e = data[j];
-      steps.push({cmd:'highlight', color:'yellow', data:[e]});
-      if (e.num < p.num) {
-        steps.push({cmd:'highlight', color:'green', data:[data[i]]});
+    // steps.push({cmd:'highlight', color:'deepskyblue', data:[data[i]]});
+    for (var j = l + 1; j < r; j++) {
+      steps.push({cmd:'highlight', color:'yellow', data:[data[j]]});
+      if (data[j].num < p.num) {
+        // steps.push({cmd:'highlight', color:'green', data:[data[i]]});
         swap(data, i, j);
         steps.push(data.slice());
         i++;
-        steps.push({cmd:'highlight', color:'deepskyblue', data:[data[i]]});
+        steps.push({cmd:'highlight', color:'deepskyblue', data:[data[i - 1]]});
       }
-      steps.push({cmd:'highlight', color:'green', data:[e]});
+      // steps.push({cmd:'highlight', color:'green', data:[e]});
 
     }
     swap(data, l, i - 1);
@@ -186,7 +184,7 @@ function quicksort (data, choosePivot) {
   }
 
   qsort(0, data.length);
-
+  steps.push({cmd:'clear'});
   steps.forEach(function(i) {
     andThen.doThis(function() {
       parseSteps(svg, i);
