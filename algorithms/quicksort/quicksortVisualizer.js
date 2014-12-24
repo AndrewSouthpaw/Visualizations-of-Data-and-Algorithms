@@ -7,7 +7,7 @@ var MIN_NUMBER = 10;
 var ANIMATION_DURATION = 200;
 var dataArray1; // A global variable that holds the unsorted array.
                // Initialized as a random array. Manipulated by quicksort.
-var steps = [];
+var dataArray2;
 
 /**
  * Initializes visualization.
@@ -15,7 +15,9 @@ var steps = [];
 var init = function(){
   var array = createRandomArray(ARRAY_LENGTH, MIN_NUMBER, MAX_NUMBER);
   createDataBars(d3.select('#sort-regular'), array);
+  createDataBars(d3.select('#sort-randomized'), array);
   dataArray1 = array.slice();
+  dataArray2 = array.slice();
 };
 
 var createDataBars = function(svg, data) {
@@ -161,11 +163,12 @@ function quicksort (data, choosePivot) {
    */
   function qsort (l, r) {
     if (l < r) {
+      console.log(choosePivot)
       steps.push({cmd:'clear'});
       steps.push({cmd:'highlight', color:'green', data:data.slice(l, r)})
       var pivotIndex = choosePivot(l, r);
       steps.push({cmd:'highlight', color:'firebrick', data:[data[pivotIndex]]});
-      swap(pivotIndex, l);
+      swap(data, pivotIndex, l);
       steps.push(data.slice());
       var partitionPoint = partition(l, r);
       qsort(l, partitionPoint);
@@ -202,12 +205,20 @@ function quicksort (data, choosePivot) {
   }
 
   var svg;
+  var steps = [];
 
   // Provide default choosePivot functionality if none provided
-  if (typeof choosePivot !== 'function') {
+  if (choosePivot === 'randomized') {
+    choosePivot = function(l, r) {
+      return Math.floor(Math.random() * (r - l)) + l;
+    };
+    svg = d3.select('#sort-randomized');
+  } else if (typeof choosePivot !== 'function') {
     choosePivot = function (l, r) { return l; };
     svg = d3.select('#sort-regular');
-  }
+  } 
+
+  console.log(choosePivot);
 
   qsort(0, data.length);
   steps.push({cmd:'clear'});
