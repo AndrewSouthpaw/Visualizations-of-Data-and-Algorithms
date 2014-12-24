@@ -1,7 +1,7 @@
 // Globals.
 var ARRAY_LENGTH = 50;
-var BAR_WIDTH = 10;
-var BAR_Y_AXIS = 200;
+var BAR_WIDTH = (1000 / ARRAY_LENGTH);
+var BAR_Y_AXIS = 120;
 var MAX_NUMBER = 100;
 var MIN_NUMBER = 10;
 var ANIMATION_DURATION = 200;
@@ -31,19 +31,24 @@ var createDataBars = function(svg, data) {
         'y': function(d){ return BAR_Y_AXIS - d.num;},
         'fill': 'lightgray'
       });
-  var text = svg.selectAll('text');
-  text.data(data, function(d){return d.id;})
-    .enter()
-    .append('text')
-    .text(function(d){return d.num;})
-    .attr(
-      {
-        'fill': 'black',
-        'font-size': 18,
-        'x': function(d,i){return i * BAR_WIDTH + (BAR_WIDTH / 2);},
-        'y': BAR_Y_AXIS + 18,
-        'text-anchor': 'middle'
-      });
+
+  // Add text only if the bars have enough space for text
+  if (BAR_WIDTH > 15) {
+    var text = svg.selectAll('text');
+    text.data(data, function(d){return d.id;})
+      .enter()
+      .append('text')
+      .text(function(d){return d.num;})
+      .attr(
+        {
+          'fill': 'black',
+          'font-size': 10,
+          'x': function(d,i){return i * BAR_WIDTH + (BAR_WIDTH / 2);},
+          'y': BAR_Y_AXIS + 18,
+          'text-anchor': 'middle'
+        });
+    
+  }
 };
 
 
