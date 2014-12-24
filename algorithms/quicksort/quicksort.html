@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quicksort</title>
+  </head>
+  <body>
+    <div>
+      <button onclick="quicksort(dataArray1); quicksort(dataArray2, 'randomized');">
+        Compare
+      </button>
+    </div>
+    <div>
+      <h1>Quicksort - standard</h1>
+      <div>
+        <button onclick="quicksort(dataArray1)">Sort</button>
+      </div>
+      <svg id="sort-regular" version="1.1" baseProfile="full" width="1000" height="150" xmlns="https://www.w3.org/2000/svg">
+      </svg>
+    </div>
+
+
+    <div>
+      <h1>Quicksort - randomized</h1>
+      <div>
+        <button onclick="quicksort(dataArray2, 'randomized')">Sort</button>
+      </div>
+      <svg id="sort-randomized" version="1.1" baseProfile="full" width="1000" height="150" xmlns="https://www.w3.org/2000/svg">
+      </svg>
+    </div>
+
+    <div>
+      <h3>Animation speed</h3>
+      <input type="range" name="animation-speed" value="250" placeholder="250"
+        min="25" max="450" onchange="ANIMATION_DURATION = +this.value">
+    </div>
+    <script src="quicksortVisualizer.js"></script>
+    <script src="../../lib/d3.js"></script>
+    <script src="../../lib/andThen.js"></script>
+    <script>init()</script>
+  </body>
+</html>
