@@ -138,18 +138,19 @@ function animateSteps (svg, steps) {
  */
 
 function parseStep (svg, step) {
-  if (Array.isArray(step)) {
-    update(svg, step);
-  } else if (typeof step === 'object') {
-    if (step.cmd === 'clear') {
-      clearHighlight(svg);
-    } else if (step.cmd === 'highlight') {
+  var cmds = {
+    'highlight': function() {
       highlightBars(svg, step.data, step.color);
+    },
+    'clear': function() {
+      clearHighlight(svg)
     }
   }
+  if (typeof cmds[step.cmd] !== 'function') {
+    return update(svg, step);
+  }
+  return cmds[step.cmd]();
 }
-
-
 
 
 /**
